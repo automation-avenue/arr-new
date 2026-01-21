@@ -1,0 +1,135 @@
+###############################################
+# Common Keys for all apps
+###############################################
+
+x-common-keys: &common-keys
+    restart: unless-stopped
+    logging:
+      driver: json-file
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: Europe/London
+    dns:
+      - 1.1.1.1
+      - 1.0.0.1
+
+services:
+###############################################
+# RADARR - Movies
+###############################################
+  radarr:
+    <<: *common-keys
+    container_name: radarr
+    image: ghcr.io/hotio/radarr:latest
+    ports:
+      - 7878:7878
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /docker/appdata/radarr:/config
+      - /data:/data
+
+###############################################
+# SONARR - TV Shows
+###############################################
+
+  sonarr:
+    <<: *common-keys
+    container_name: sonarr
+    image: ghcr.io/hotio/sonarr:latest
+    ports:
+      - 8989:8989
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /docker/appdata/sonarr:/config
+      - /data:/data
+
+###############################################
+# LIDARR - Music
+###############################################
+
+  lidarr:
+    <<: *common-keys
+    container_name: lidarr
+    image: ghcr.io/hotio/lidarr:latest
+    ports:
+      - 8686:8686
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /docker/appdata/lidarr:/config
+      - /data:/data
+
+###############################################
+# BAZARR - Subtitles
+###############################################
+
+  bazarr:
+    <<: *common-keys
+    container_name: bazarr
+    image: ghcr.io/hotio/bazarr:latest
+    ports:
+      - 6767:6767
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /docker/appdata/bazarr:/config
+      - /data/media:/data/media
+
+###############################################
+# PROWLARR - Indexer Manager
+###############################################
+
+  prowlarr:
+    <<: *common-keys
+    container_name: prowlarr
+    image: ghcr.io/hotio/prowlarr:latest
+    ports:
+      - 9696:9696
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /docker/appdata/prowlarr:/config
+
+###############################################
+# QBITTORRENT - Downloader
+###############################################
+
+  qbittorrent:
+    <<: *common-keys
+    container_name: qbittorrent
+    image: ghcr.io/hotio/qbittorrent:latest
+    ports:
+      - 8080:8080
+      - 6881:6881
+      - 6881:6881/udp
+    environment:
+      - WEBUI_PORT=8080
+      - TORRENTING_PORT=6881
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /docker/appdata/qbittorrent:/config
+      - /data:/data
+
+###############################################
+# JELLYFIN - Media Server
+###############################################
+
+  jellyfin:
+    <<: *common-keys
+    container_name: jellyfin
+    image: ghcr.io/hotio/jellyfin:latest
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /docker/appdata/jellyfin:/config
+      - /data/media:/data/media:ro #read-only
+    ports:
+      - 8096:8096
+
+###############################################
+# ARR Stack Dedicated Network
+###############################################
+
+networks:
+  default:
+    name: arr_network
+
+###############################################
+###############################################
