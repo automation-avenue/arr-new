@@ -227,7 +227,11 @@ Night of the Living Dead (1968), His Girl Friday (1940), Charade (1963), and The
 Configure Prowlarr with The "Gold Standard" Indexer for legal media like The Internet Archive (Archive.org). <br />
 They host thousands of public domain movies. <br />
 
-In Jellyfin you should be able to see the folders in /data/media so simply create new media folder and map it in Jellyfin <br />
+## Jellyfin <br />
+`http://<host ip address>:8096` <br />
+To watch your movies, just log on to Jellyfin, create user and password and you can `Add Media Library`. <br />
+For Content Type - choose `Movies` and find folder `/data/media/movies`. <br />
+Add more content types like TV or Music accordingly, binding them to correct media folder. <br />
 
 **************************
 
