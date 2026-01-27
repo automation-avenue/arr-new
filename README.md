@@ -1,12 +1,12 @@
 # ARR stack NEW VERSION <br />
 Below are instructions for Debian / Ubuntu operating system, but docker can be natively run on any linux distro <br />
-and if you have Windows or Mac - you can use for tools like Docker Desktop to run docker containers. <br />
+and if you have Windows or Mac - you can use for tools like [Docker Desktop](https://docs.docker.com/desktop/) to run docker containers. <br />
 
 ### Install docker compose and prepare environment <br />
 
-Install docker compose as per instructions here: [LINK](https://docs.docker.com/compose/) <br />
+We will install docker and docker compose using this: [LINK](https://docs.docker.com/compose/) <br />
 
-So - go to `Install` (on the left) to Plugin - scroll down to `Install using the Repository` – Ubuntu (unless you install on other OS): <br />
+So - go to `Install` (on the left) to `Plugin` - scroll down to `Install using the Repository` – `Ubuntu` (unless you install on other OS): <br />
 You should be in [THIS LOCATION](https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository) <br /> <br />
 
 Copy ALL those commands that are listed there, sth like: <br />
@@ -45,8 +45,7 @@ You should get a lot of command arguments including 'version' one, so run again:
 `docker compose version` <br />
 
 That will show all works as expected. <br />
-The stack was created by following this [TRASH GUIDE](https://trash-guides.info/File-and-Folder-Structure/How-to-set-up/Docker/) now: <br />
-Create folder structure (this is for torrents only, for torrents + usenet client like NZBGet or SABnzbd - see the other example on trash guide):  <br />
+Create folder structure as per this [TRASH GUIDE](https://trash-guides.info/File-and-Folder-Structure/How-to-set-up/Docker/) now: <br />
 
 ```
 sudo mkdir -p /data/{torrents/{tv,movies,music},media/{tv,movies,music}}
@@ -56,7 +55,8 @@ sudo chown -R 1000:1000 /data
 sudo chmod -R a=,a+rX,u+w,g+w /data
 ls -ln /data
 ```
- <br />
+*(If you use torrents + Usenet client like NZBGet or SABnzbd then you need to use 
+`mkdir -p /data/{usenet/{incomplete,complete}/{tv,movies,music},media/{tv,movies,music}}` instead in that 1st first line)*  <br /> <br />
 
 Trash guide docker-compose configuration can be found [HERE](https://trash-guides.info/File-and-Folder-Structure/How-to-set-up/Docker/) (scroll down a bit) <br />
 You can find more information on [SERVARR](https://wiki.servarr.com/radarr/installation/docker) <br />
@@ -66,16 +66,22 @@ You can use command like `git clone https://github.com/automation-avenue/arr-new
 
 Note that hostnames are not needed here as we have dedicated network for our containers <br />
 
+***************************
+
+# First run: <br />
+
 You should be able to run all services now with simple `sudo docker compose up -d` :) <br />
 
 ***************************
 
 # Configure services: <br />
 
-Now you need to ensure your internal application settings match. <br />
+Now you need to ensure your internal application settings match, for example: <br />
  - Radarr: Inside the web UI, your "Root Folder" for your library should be `/data/media/movies` (`/data/media/tv` for Sonarr and `/data/media/music` for Lidarr). <br />
  - qBittorrent: Your download path should be set to `/data/torrents` <br />
- - because both paths are on the same mount (`/data`), the OS treats them as the same file system, enabling instant hard links, see below: <br />
+ - because both paths are on the same mount (`/data`), the OS treats them as the same file system, enabling instant hard links (also known as atomic moves) <br />
+ 
+Let's configure that all: <br />
 
    
 ## qBittorrent: <br />
@@ -136,7 +142,7 @@ Now configure Prowlarr service (each of these services will require to set up us
 Use 'Form (login page) authentication and set your user and pass for all. <br />
 
 ## Prowlarr: <br />
-`http://<host ip>:9696` <br />
+`http://<host_ip>:9696` <br />
 Go to `Settings - Download Clients` - `+` symbol - Add download client - choose `qBittorrent` (unless you decided touse different download client) <br />
 UNTICK the `Use SSL` (unless you have SSL configured in qBittorrent - Tools - Options -WebUI but by default it is not used) <br />
 Host - use `qbittorrent` and port - put the port id matching the WebUI in docker-compose for qBittorrent (default is `8080`) <br />
@@ -146,9 +152,10 @@ Click little `Test` button at the bottom, make sure you get a green `tick` then 
 
 
 ## Radarr: <br />
-`http://<host ip address>:7878` <br />
+`http://<host_ip>:7878` <br />
 Go to `Settings - Media Management - Add Root Folder` (scroll down to the bottom) - set  `/data/media/movies` as your root folder <br />
-Still in `Settings - Media Management - click Show Advanced - Importing - Use Hardlinks instead of Copy` - make sure its 'ticked' <br />
+Still in `Settings - Media Management - click Show Advanced - Importing - Use Hardlinks instead of Copy` - make sure its 'ticked' <br /> <br />
+
 Optional - you can also tick `Rename Movies` and `Delete empty movie folders during disk scan` , and in `Import Extra Files` - make sure that box is ticked <br />
 and in `Import Extra files` field type `srt,sub,nfo` (those 3 changes are all optional) <br /><br />
 
@@ -166,9 +173,10 @@ You need to configure SABnzbd / qbittorrent and any other services you run too, 
 
 
 ## Sonarr: <br />
-`http://<host ip>:8989` br />
+`http://<host_ip>:8989` <br />
 Go to `Settings - Media Management - Add Root Folder` - set  `/data/media/tv` as your root folder <br />
-Still in `Settings - Media Management - Show Advanced - Importing - Use Hardlinks instead of Copy` - make sure its 'ticked' <br />
+Still in `Settings - Media Management - Show Advanced - Importing - Use Hardlinks instead of Copy` - make sure its 'ticked' <br /> <br />
+
 Optional - you can also tick `Rename Episodes` and `Delete empty Folders - delete empty series and season folders during disk scan` <br />
 Then in `Import Extra Files` - make sure that box is ticked and in `Import Extra files` field type `srt,sub,nfo` (those 3 changes are all optional) <br /><br />
 
@@ -183,7 +191,7 @@ Click `Test` and if Green - `Save`<br />
 
 
 ## Lidarr: <br />
-`http://<host ip address>:8686` <br />
+`http://<host_ip>:8686` <br />
 Go to Settings - Media Management - Add Root Folder - set path to /data/media/music as your root folder, set name to Root or whatever and save <br />
 Then Settings- Download clients - click 'plus' symbol, choose qBittorrent etc - basically same steps as for previous services<br />
 Host 'qbittorrent', port 8080, ,make sure SSL is unticked, username admin and password - one you configured for qBittorrent <br /> 
@@ -195,7 +203,7 @@ Click `Test` and if Green - `Save` <br />
 
 
 ## Bazarr: <br />
-`http://host ip address>:6767` <br />
+`http://host_ip>:6767` <br />
 Languages: Go to Settings > Languages and create a "Language Profile" (e.g., "English" or "Any"). <br />
 Providers: Go to Settings > Providers and add your subtitle sources (OpenSubtitles.org, Subscene, etc.). Most require a free account. <br />
 Sync: After connecting Radarr/Sonarr, go to the Series or Movies tab and click "Update" to pull in your existing library. <br />
@@ -298,3 +306,30 @@ jellyfin:
     devices:
       - /dev/dri:/dev/dri # << container setting to pass through GPU (this requires more steps outside of docker compose though)
 ```
+
+### SABnzbd Usenet client <br />
+If you use SABnzbd instead of qBittorrent then you need to add that to your yml file: 
+
+```
+  sabnzbd:
+    container_name: sabnzbd
+    image: ghcr.io/hotio/sabnzbd:latest
+    ports:
+      - 8080:8080
+      - 9090:9090
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /docker/appdata/sabnzbd:/config
+      - /data:/data
+```
+<br />
+
+Note that if you want to run both - qBittorrent AND sabnzbd - then you will have conflict for port 8080 <br />
+as that port is also utilized by qBittorrent. <br />
+You will need to change the external port for one of the services to something not used, for example: <br />
+
+```
+    ports:
+      - 8081:8080
+```
+<br />
