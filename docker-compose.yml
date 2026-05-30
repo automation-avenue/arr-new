@@ -89,6 +89,21 @@ services:
       - /docker/appdata/prowlarr:/config
 
 ###############################################
+# JACKETT - Index Manager
+###############################################
+
+  jackett:
+    <<: *common-keys
+    container_name: jackett
+    image: lscr.io/linuxserver/jackett:latest
+    ports:
+      - 9117:9117
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /docker/appdata/jackett:/config
+      - /data:/data
+
+###############################################
 # QBITTORRENT - Downloader
 ###############################################
 
@@ -116,12 +131,42 @@ services:
     <<: *common-keys
     container_name: jellyfin
     image: ghcr.io/hotio/jellyfin:latest
+    ports:
+      - 8096:8096
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /docker/appdata/jellyfin:/config
       - /data/media:/data/media:ro #read-only
+
+#############################################
+# SEEARR - File Requests
+#############################################
+
+  seerr:
+    <<: *common-keys
+    container_name: seerr
+    image: ghcr.io/seerr-team/seerr:latest
     ports:
-      - 8096:8096
+      - 5055:5055
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /docker/appdata/seerr:/config
+      - /data:/data
+
+#############################################
+# BYPARR - Cloudflare Bypass
+#############################################
+
+  byparr:
+    <<: *common-keys
+    container_name: byparr
+    image: ghcr.io/thephaseless/byparr:latest
+    ports:
+      - 8191:8191
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /docker/appdata/byparr:/config
+      - /data:/data
 
 ###############################################
 # ARR Stack Dedicated Network
